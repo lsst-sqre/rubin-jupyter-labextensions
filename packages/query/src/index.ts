@@ -131,18 +131,7 @@ function apiRequest(url: string, init: RequestInit, settings: ServerConnection.I
   *
   * @returns a Promise resolved with the JSON response
   */
-  // Fake out URL check in makeRequest
-  let newSettings = ServerConnection.makeSettings({
-    baseUrl: settings.baseUrl,
-    appUrl: settings.appUrl,
-    wsUrl: settings.wsUrl,
-    init: settings.init,
-    token: settings.token,
-    Request: settings.Request,
-    Headers: settings.Headers,
-    WebSocket: settings.WebSocket
-  });
-  return ServerConnection.makeRequest(url, init, newSettings).then(
+  return ServerConnection.makeRequest(url, init, settings).then(
     response => {
       if (response.status !== 200) {
         return response.json().then(data => {
