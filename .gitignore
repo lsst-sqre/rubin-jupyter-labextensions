@@ -1,0 +1,8 @@
+# dependencies
+node_modules/
+lib/
+lerna-debug.log
+# controversial, but....if you want pins, install from npm
+package-lock.json
+
+

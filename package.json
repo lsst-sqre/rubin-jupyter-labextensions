@@ -1,0 +1,10 @@
+{
+  "name": "rubin-jupyter-labextensions",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^3"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist"
+  }
+}

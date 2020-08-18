@@ -1,0 +1,42 @@
+{
+  "name": "@lsst-sqre/rubin-labextension-query",
+  "version": "0.0.1",
+  "description": "Create populated notebook from query ID",
+  "author": "Rubin Observatory DM/SQuaRE",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lsst-sqre/rubin-jupyter-labextensions.git"
+  },
+  "keywords": [
+    "jupyter",
+    "jupyterlab"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "prepublish": "npm run build"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js"
+  ],
+  "jupyterlab": {
+    "extension": true
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^2",
+    "@jupyterlab/apputils": "^2",
+    "@jupyterlab/coreutils": "^4",
+    "@jupyterlab/docmanager": "^2",
+    "@jupyterlab/mainmenu": "^2",
+    "@lumino/algorithm": "^1",
+    "@lumino/widgets": "^1",
+    "@types/core-js": "^2"
+  },
+  "devDependencies": {
+    "rimraf": "^2",
+    "typescript": "^3.9.7"
+  }
+}
