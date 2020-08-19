@@ -1,4 +1,4 @@
-// Copyright (c) Rubin Observatory DM/SQuaRE
+// Copyright (c) LSST DM/SQuaRE
 // Distributed under the terms of the MIT License.
 
 import {
@@ -39,7 +39,8 @@ import {
  */
 export
 namespace CommandIDs {
-  export const rubinquery: string = 'rubinquery';
+  export const rubinQueryAPI: string = 'rubinqueryapi';
+  export const rubinQuerySquash: string = 'rubinquerysquash';
 };
 
 /**
@@ -55,34 +56,39 @@ interface PathContainer {
  */
 function activateRubinQueryExtension(app: JupyterFrontEnd, mainMenu: IMainMenu, docManager: IDocumentManager): void {
 
-  console.log('rubin-query labextension: activated')
+  console.log('Rubin query extension: activated')
 
   let svcManager = app.serviceManager;
 
-  const { commands } = app;
-
-  commands.addCommand(CommandIDs.rubinquery, {
-    label: 'Open from Query ID...',
-    caption: 'Open notebook from supplied query ID',
+  app.commands.addCommand(CommandIDs.rubinQueryAPI, {
+    label: 'Open from Query URL...',
+    caption: 'Open notebook from supplied API query URL',
     execute: () => {
-      rubinQuery(app, docManager, svcManager)
+      rubinQuery(app, docManager, svcManager, "api")
+    }
+  });
+  app.commands.addCommand(CommandIDs.rubinQuerySquash, {
+    label: 'Open from CI ID...',
+    caption: 'Open notebook from supplied Squash CI ID',
+    execute: () => {
+      rubinQuery(app, docManager, svcManager, "squash")
     }
   });
 
   // Add commands and menu itmes.
-  let menu: Menu.IItemOptions[] =
-    [
-      { command: CommandIDs.rubinquery },
-    ]
-  // Put it in the middle of file menu
-  let rank = 50;
-  mainMenu.fileMenu.addGroup(menu, rank);
+  const menu = new Menu({ commands: app.commands })
+  menu.addItem({ command: CommandIDs.rubinQueryAPI })
+  menu.addItem({ command: CommandIDs.rubinQuerySquash })
+  menu.title.label = "Rubin"
+  mainMenu.addMenu(menu, {
+    rank: 420,
+  });
 }
 
 class QueryHandler extends Widget {
-  constructor() {
-    super({ node: Private.createQueryNode() });
-    this.addClass('rubin-qh')
+  constructor(prompt: string) {
+    super({ node: Private.createQueryNode(prompt) });
+    this.addClass('lsst-rubin')
   }
 
   get inputNode(): HTMLInputElement {
@@ -96,10 +102,10 @@ class QueryHandler extends Widget {
 
 
 
-function queryDialog(manager: IDocumentManager): Promise<string | null> {
+function queryDialog(manager: IDocumentManager, prompt: string): Promise<string | null> {
   let options = {
     title: 'Query ID',
-    body: new QueryHandler(),
+    body: new QueryHandler(prompt),
     focusNodeSelector: 'input',
     buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'CREATE' })]
   }
@@ -131,6 +137,7 @@ function apiRequest(url: string, init: RequestInit, settings: ServerConnection.I
   *
   * @returns a Promise resolved with the JSON response
   */
+  // Fake out URL check in makeRequest
   return ServerConnection.makeRequest(url, init, settings).then(
     response => {
       if (response.status !== 200) {
@@ -142,14 +149,23 @@ function apiRequest(url: string, init: RequestInit, settings: ServerConnection.I
     });
 }
 
-function rubinQuery(app: JupyterFrontEnd, docManager: IDocumentManager, svcManager: ServiceManager): void {
-  queryDialog(docManager).then(queryid => {
+function rubinQuery(app: JupyterFrontEnd, docManager: IDocumentManager, svcManager: ServiceManager, qtype: string): void {
+  let prompt = "Enter API Query URL"
+  if (qtype == "squash") {
+    prompt = "Enter Squash CI_ID"
+  }
+
+  queryDialog(docManager, prompt).then(queryid => {
     console.log("queryid is", queryid)
     if (!queryid) {
       console.log("queryid was null")
       return new Promise((res, rej) => { })
     }
-    let body = JSON.stringify({ "query_id": queryid })
+    // Figure out some more generic way to get params
+    let body = JSON.stringify({
+      "query_id": queryid,
+      "query_type": qtype
+    })
     let endpoint = PageConfig.getBaseUrl() + "rubin/query"
     let init = {
       method: "POST",
@@ -166,11 +182,11 @@ function rubinQuery(app: JupyterFrontEnd, docManager: IDocumentManager, svcManag
 
 
 /**
- * Initialization data for the rubin query extension.
+ * Initialization data for the jupyterlab-lsstquery extension.
  */
 const RubinQueryExtension: JupyterFrontEndPlugin<void> = {
   activate: activateRubinQueryExtension,
-  id: 'jupyter.extensions.rubin.query',
+  id: 'jupyter.extensions.jupyterlab-lsst-extension',
   requires: [
     IMainMenu,
     IDocumentManager
@@ -178,7 +194,7 @@ const RubinQueryExtension: JupyterFrontEndPlugin<void> = {
   autoStart: true,
 };
 
-export default RubinQueryExtension;
+export default RubinQueryExtension
 
 namespace Private {
   /**
@@ -186,10 +202,10 @@ namespace Private {
    */
 
   export
-    function createQueryNode(): HTMLElement {
+    function createQueryNode(prompt: string): HTMLElement {
     let body = document.createElement('div');
     let qidLabel = document.createElement('label');
-    qidLabel.textContent = 'Enter Query ID';
+    qidLabel.textContent = prompt;
     let name = document.createElement('input');
     body.appendChild(qidLabel);
     body.appendChild(name);

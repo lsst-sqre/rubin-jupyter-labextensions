@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lsst-sqre/runib-jupyter-labextensions.git"
+    "url": "https://github.com/lsst-sqre/rubin-jupyter-labextensions.git"
   },
   "keywords": [
     "jupyter",
