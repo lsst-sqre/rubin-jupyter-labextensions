@@ -1,0 +1,38 @@
+{
+  "name": "@lsst-sqre/rubin-labextension-displayversion",
+  "version": "0.0.1",
+  "description": "Display Lab container version info in status bar",
+  "author": "Rubin Observatory DM/SQuaRE",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lsst-sqre/rubin-jupyter-labextensions.git"
+  },
+  "keywords": [
+    "jupyter",
+    "jupyterlab"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "prepublish": "npm run build"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js"
+  ],
+  "jupyterlab": {
+    "extension": true
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^2",
+    "@jupyterlab/coreutils": "^4",
+    "@jupyterlab/services": "^5",
+    "@jupyterlab/statusbar": "^2"
+  },
+  "devDependencies": {
+    "rimraf": "^2",
+    "typescript": "^3.9.7"
+  }
+}
