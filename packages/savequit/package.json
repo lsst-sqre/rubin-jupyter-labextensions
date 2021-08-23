@@ -1,6 +1,6 @@
 {
   "name": "@lsst-sqre/rubin-labextension-savequit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "One-stop save-and-terminate-container-and-logout.",
   "author": "Rubin Observatory DM/SQuaRE",
   "main": "lib/index.js",
