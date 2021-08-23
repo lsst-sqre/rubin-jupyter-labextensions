@@ -166,8 +166,8 @@ function justQuit(app: JupyterFrontEnd, docManager: IDocumentManager, svcManager
 function infoDialog(): Promise<void> {
   let options = {
     title: "Redirecting to landing page",
-    body: "Please wait until you are redirected back to the landing page.",
-    buttons: [Dialog.okButton()]
+    body: "JupyterLab cleaning up and redirecting to landing page.",
+    buttons: [Dialog.okButton({ label: 'Got it!' })]
   };
   return showDialog(options).then(() => {
     console.log("Info dialog panel displayed")
